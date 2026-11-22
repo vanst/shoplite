@@ -38,3 +38,6 @@ storage/
 !.claude/
 .claude/settings.local.json
 .claude/logs/
+
+# log CI đã che secret (bài 7.4)
+.ci/
