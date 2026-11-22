@@ -50,14 +50,29 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       };
     }
 
-    case "update-quantity":
+    case "update-quantity": {
+      const target = state.items.find((line) => line.productId === action.productId);
+      // Dòng hết hàng: clamp sẽ ra 0 hoặc 1 sai nghĩa, chỉ cho xóa
+      if (!target || getMaxQuantity(target.stock) === 0) return state;
       return {
         items: state.items.map((line) =>
-          line.productId === action.productId
+          line === target
             ? { ...line, quantity: clampQuantity(action.quantity, line.stock) }
             : line,
         ),
       };
+    }
+
+    case "sync-stock": {
+      let changed = false;
+      const items = state.items.map((line) => {
+        const stock = action.stock[line.productId] ?? 0;
+        if (stock === line.stock) return line;
+        changed = true;
+        return { ...line, stock };
+      });
+      return changed ? { items } : state;
+    }
 
     case "remove":
       return { items: state.items.filter((line) => line.productId !== action.productId) };

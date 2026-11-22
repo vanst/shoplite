@@ -76,3 +76,48 @@ describe("cartReducer - update / remove / clear", () => {
     expect(getCartSubtotal(twoItems)).toBe(2 * 100_000 + 50_000);
   });
 });
+
+describe("cartReducer - sync-stock", () => {
+  const base: CartState = {
+    items: [
+      { ...item({ productId: "p001", stock: 20 }), quantity: 8 },
+      { ...item({ productId: "p002", stock: 20 }), quantity: 3 },
+    ],
+  };
+
+  it("chỉ cập nhật stock, giữ nguyên quantity và không xóa dòng", () => {
+    const state = cartReducer(base, { type: "sync-stock", stock: { p001: 2, p002: 20 } });
+    expect(state.items.map((l) => [l.stock, l.quantity])).toEqual([
+      [2, 8],
+      [20, 3],
+    ]);
+  });
+
+  it("dòng không còn trong payload nhận stock 0", () => {
+    const state = cartReducer(base, { type: "sync-stock", stock: { p002: 5 } });
+    expect(state.items.map((l) => [l.stock, l.quantity])).toEqual([
+      [0, 8],
+      [5, 3],
+    ]);
+  });
+
+  it("không đổi gì thì trả lại đúng state cũ", () => {
+    expect(cartReducer(base, { type: "sync-stock", stock: { p001: 20, p002: 20 } })).toBe(base);
+  });
+});
+
+describe("cartReducer - update-quantity khi hết hàng", () => {
+  it("dòng stock 0 trả lại state cũ, không tạo quantity 0", () => {
+    const state: CartState = { items: [{ ...item({ stock: 0 }), quantity: 2 }] };
+    expect(cartReducer(state, { type: "update-quantity", productId: "p001", quantity: 0 })).toBe(
+      state,
+    );
+  });
+
+  it("dòng stock > 0 vẫn clamp trong 1..getMaxQuantity", () => {
+    const state: CartState = { items: [{ ...item({ stock: 3 }), quantity: 2 }] };
+    const up = cartReducer(state, { type: "update-quantity", productId: "p001", quantity: 9 });
+    const down = cartReducer(state, { type: "update-quantity", productId: "p001", quantity: 0 });
+    expect([up.items[0].quantity, down.items[0].quantity]).toEqual([3, 1]);
+  });
+});

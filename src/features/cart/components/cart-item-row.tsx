@@ -15,6 +15,9 @@ interface CartItemRowProps {
 }
 
 export function CartItemRow({ item, onQuantityChange, onRemove }: CartItemRowProps) {
+  const maxQuantity = getMaxQuantity(item.stock);
+  const soldOut = maxQuantity === 0;
+  const overStock = item.quantity > maxQuantity;
   return (
     <li className="flex gap-4 py-4" data-testid="cart-item">
       <Link href={`/products/${item.slug}`} className="w-20 shrink-0 sm:w-24">
@@ -29,14 +32,25 @@ export function CartItemRow({ item, onQuantityChange, onRemove }: CartItemRowPro
             {item.name}
           </Link>
           <p className="text-sm text-slate-500">{formatCurrency(item.price)}</p>
+          {overStock && (
+            <p
+              role="alert"
+              className="text-sm font-medium text-rose-600"
+              data-testid="stock-warning"
+            >
+              {soldOut ? "Đã hết hàng" : `Chỉ còn ${item.stock} sản phẩm`}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-4">
-          <QuantityInput
-            value={item.quantity}
-            max={getMaxQuantity(item.stock)}
-            onChange={onQuantityChange}
-            label={`Số lượng ${item.name}`}
-          />
+          {!soldOut && (
+            <QuantityInput
+              value={item.quantity}
+              max={maxQuantity}
+              onChange={onQuantityChange}
+              label={`Số lượng ${item.name}`}
+            />
+          )}
           <p className="w-28 text-right font-semibold text-slate-900">
             {formatCurrency(item.price * item.quantity)}
           </p>

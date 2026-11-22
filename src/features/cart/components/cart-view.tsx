@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { buttonStyles } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useSyncCartStock } from "@/features/cart/stock-sync";
 import { useCart } from "@/features/cart/use-cart";
 import { CartItemRow } from "./cart-item-row";
 import { CartSummary } from "./cart-summary";
 
 export function CartView() {
   const { items, itemCount, subtotal, hydrated, updateQuantity, removeItem, clear } = useCart();
+
+  useSyncCartStock(hydrated && items.length > 0);
 
   if (!hydrated) {
     return <div className="h-64 animate-pulse rounded-2xl bg-slate-200/60" aria-busy />;

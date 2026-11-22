@@ -17,7 +17,10 @@ export function jsonError(
 /** Chuyển lỗi thành response chuẩn { error: { code, message, details? } }. */
 export function handleRouteError(error: unknown): NextResponse<ApiErrorBody> {
   if (error instanceof OrderError) {
-    return jsonError(error.httpStatus, error.code, error.message, error.details);
+    const response = jsonError(error.httpStatus, error.code, error.message, error.details);
+    const retryAfter = error.details?.retryAfterSeconds;
+    if (retryAfter) response.headers.set("Retry-After", retryAfter);
+    return response;
   }
   console.error(error);
   return jsonError(500, "INTERNAL_ERROR", "Đã có lỗi xảy ra, vui lòng thử lại sau");

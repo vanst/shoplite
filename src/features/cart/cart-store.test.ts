@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getProductById } from "@/features/catalog/catalog-service";
+import { getProductById } from "@/features/catalog/catalog-data";
 import { toCartItem } from "./cart-reducer";
 import { CART_STORAGE_KEY, cartStore } from "./cart-store";
 

@@ -19,4 +19,5 @@ export type CartAction =
   | { type: "add"; item: Omit<CartItem, "quantity">; quantity: number }
   | { type: "update-quantity"; productId: string; quantity: number }
   | { type: "remove"; productId: string }
-  | { type: "clear" };
+  | { type: "clear" }
+  | { type: "sync-stock"; stock: Record<string, number> };

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buildCatalogHref } from "@/features/catalog/catalog-service";
+import { buildCatalogHref } from "@/features/catalog/catalog-rules";
 import type { CatalogQuery, Category } from "@/features/catalog/types";
 import { cn } from "@/lib/cn";
 

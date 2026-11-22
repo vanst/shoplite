@@ -10,7 +10,7 @@ import {
   DEFAULT_CATALOG_QUERY,
   parseCatalogQuery,
   SORT_LABELS,
-} from "@/features/catalog/catalog-service";
+} from "@/features/catalog/catalog-rules";
 import { SORT_OPTIONS, type CatalogQuery } from "@/features/catalog/types";
 
 const inputClass =

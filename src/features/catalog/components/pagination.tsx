@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { buildCatalogHref } from "@/features/catalog/catalog-service";
+import { buildCatalogHref } from "@/features/catalog/catalog-rules";
 import type { CatalogQuery } from "@/features/catalog/types";
 import { cn } from "@/lib/cn";
 

@@ -1,0 +1,17 @@
+.next
+.next-e2e
+node_modules
+coverage
+storage
+playwright-report
+test-results
+package-lock.json
+next-env.d.ts
+.claude
+.specify
+_bmad
+_bmad-output
+.claude/skills
+.agents
+bmad-lab-kit
+.next-manual

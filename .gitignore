@@ -3,11 +3,16 @@ node_modules/
 
 # next.js
 .next/
+# thư mục build của server E2E thứ hai (NEXT_DIST_DIR)
+.next-e2e/
+.next-smoke/
 out/
 
 # build output
 build/
 *.tsbuildinfo
+# next dev/build tự sinh lại, nội dung đổi theo chế độ chạy
+next-env.d.ts
 
 # testing
 coverage/
@@ -24,3 +29,12 @@ test-results/
 
 # OS
 .DS_Store
+
+# local storage (đơn hàng JSON)
+storage/
+
+# claude code: commit cấu hình dự án (ghi đè `.claude` trong global gitignore),
+# trừ cấu hình riêng từng máy và log của hook
+!.claude/
+.claude/settings.local.json
+.claude/logs/
