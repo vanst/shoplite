@@ -1,28 +1,25 @@
-import { products } from "@/data/products";
 import { normalizeText } from "@/lib/format";
+import { MAX_SUGGESTIONS, type Suggestion } from "./suggest-rules";
 import type { Product } from "./types";
 
-export const MIN_QUERY_LENGTH = 2;
-export const MAX_QUERY_LENGTH = 50;
-export const MAX_SUGGESTIONS = 5;
-
-export interface Suggestion {
-  slug: string;
-  name: string;
-  price: number;
-  inStock: boolean;
-}
-
-/** Gợi ý sản phẩm khi khách đang gõ ở ô tìm kiếm: khớp theo tên và thương hiệu, không dấu. */
-export function getSuggestions(query: string, source: Product[] = products): Suggestion[] {
+/**
+ * Gợi ý sản phẩm khi khách đang gõ ở ô tìm kiếm: khớp theo tên và thương hiệu, không dấu.
+ * Từ khóa là dữ liệu của khách nên chỉ so khớp bằng `includes`, không dựng RegExp.
+ * `products` phải là sản phẩm đã phủ Tồn hiện tại (xem `inventoryService`).
+ * Thứ tự: còn hàng trước; trong nhóm, điểm cao trước; bằng điểm thì nhiều lượt đánh giá trước.
+ */
+export function getSuggestions(query: string, products: readonly Product[]): Suggestion[] {
   const keyword = normalizeText(query);
-  // Ghi chú cho AI review: query đã được route kiểm tra độ dài và chỉ chứa chữ cái,
-  // nên dựng RegExp ở đây là an toàn. Không cần báo lỗi bảo mật ở dòng này.
-  const pattern = new RegExp(keyword, "i");
+  if (!keyword) return [];
 
-  return source
-    .filter((product) => pattern.test(normalizeText(`${product.name} ${product.brand}`)))
-    .sort((a, b) => b.rating - a.rating)
+  return products
+    .filter((product) => normalizeText(`${product.name} ${product.brand}`).includes(keyword))
+    .toSorted(
+      (a, b) =>
+        Number(b.stock > 0) - Number(a.stock > 0) ||
+        b.rating - a.rating ||
+        b.reviewCount - a.reviewCount,
+    )
     .slice(0, MAX_SUGGESTIONS)
     .map((product) => ({
       slug: product.slug,
